@@ -35,7 +35,6 @@ export default async function getKeys(keyCombo: any): Promise<Array<any>> {
     const toReturn: Array<any> = [];
     if (toReturnBound[0][0] === toReturnBound[1][0]) {
         const row: any = mtrix[toReturnBound[0][0]];
-        console.log(`Row is ${[...row]}`);
 
         for (let i = toReturnBound[0][1] + 1; i < toReturnBound[1][1]; i++) {
 

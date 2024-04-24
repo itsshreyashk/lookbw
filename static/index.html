@@ -13,17 +13,93 @@
     <span class="fixed top-2 left-2 border shadow px-4 py-2 rounded-xl">Tip : h and l</span>
     <div class="flex justify-center items-center p-2 h-screen">
         <div class="flex border-4 border-blue-600 rounded-xl shadow">
-            <input type="text" name="lookbw" class="px-4 py-2 font-bold outline-none border-0"
+            <input type="text" name="lookbw" id="keyTyper" class="px-4 py-2 font-bold outline-none border-0"
                 placeholder="Look Between What Keys?" aria-required="true" aria-details="Provide key values.">
-                <span class="text-sm py-2 px-4 items-center flex"><span class="border rounded p-1 shadow">Press Enter</span></span>
+            <span class="text-sm py-2 px-4 items-center flex"><span class="border rounded p-1 shadow">Press
+                    Enter</span></span>
+        </div>
+    </div>
+    <div id="holder" class="flex h-screen w-screen fixed top-0 left-0 items-center justify-center hidden">
+        <div class="p-8 bg-blue-600 rounded-lg anim-0pop">
+            <span class="text-white text-7xl" id="realKeys">A,E</span>
         </div>
     </div>
     <style>
+        .anim-0pop {
+            animation: anim-pop 0.5s;
+        }
 
+        @keyframes anim-pop {
+            0% {
+                transform: scale(0.2);
+            }
+
+            40% {
+                transform: scale(1.5);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .close-0pop {
+            animation: close-pop 0.5s;
+        }
+
+        @keyframes close-pop {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.5);
+            }
+
+            100% {
+                transform: scale(0.1);
+            }
+        }
     </style>
-    <script>
-        window.addEventListener('load', ()=> {
 
+    <script>
+        window.addEventListener('load', async () => {
+            const keyTyper = document.getElementById("keyTyper");
+            const resultKeys = document.getElementById("realKeys");
+            const holder = document.getElementById("holder");
+            keyTyper.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.target.disabled = true; // Correcting 'disable' to 'disabled'
+                    const value = keyTyper.value;
+                    const body = JSON.stringify({ value: value });
+
+                    const response = await fetch('http://localhost:8080/api/getKeys', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: body,
+                    });
+
+                    const responseText = await response.text(); // More explicit separation
+                    if (response.status === 200) {
+                        e.target.disabled = false;
+                        resultKeys.innerHTML = responseText;
+
+                        holder.classList.toggle('hidden');
+                        setTimeout(() => {
+                            holder.classList.toggle('close-0pop');
+                            setTimeout(() => {
+                                holder.classList.toggle('close-0pop');
+                                holder.classList.toggle('hidden');
+                            }, 500);
+                        }, 2000);
+                        /*Toggle div show and close*/
+                    }
+
+
+                }
+            })
         })
     </script>
 
